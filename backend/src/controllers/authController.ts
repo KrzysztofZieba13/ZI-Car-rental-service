@@ -3,6 +3,8 @@ import { Types } from 'mongoose';
 import jwt from 'jsonwebtoken';
 import User, { IUser } from '../models/userModel';
 
+const ENV: string = process.env.NODE_ENV || 'development';
+
 const signToken = (id: Types.ObjectId): string => {
     const jwtSecret: string = process.env.JWT_SECRET;
     const jwtExpires: number = Number(process.env.JWT_EXPIRES);
@@ -24,6 +26,7 @@ const createSendToken = (user: IUser, statusCode: number, res: Response) => {
         expires: new Date(
             Date.now() + Number(jwtCookieExpireDays) * 24 * 60 * 60 * 1000,
         ),
+        secure: ENV === 'production',
     };
 
     res.cookie('jwt', token, cookieOption);
@@ -38,7 +41,7 @@ const createSendToken = (user: IUser, statusCode: number, res: Response) => {
     });
 };
 
-export const signup = async (req: Request, res: Response, next) => {
+export const signup = async (req: Request, res: Response) => {
     const newUser: IUser = await User.create({
         name: req.body.name,
         email: req.body.email,
@@ -48,4 +51,15 @@ export const signup = async (req: Request, res: Response, next) => {
     });
 
     createSendToken(newUser, 201, res);
+};
+
+export const signin = async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+    const user: IUser = await User.findOne({ email }).select('password');
+
+    if (!user || !(await user.comparePassword(password, user.password))) {
+        throw new Error(`Incorrect password or email address`);
+    }
+
+    createSendToken(user, 200, res);
 };
