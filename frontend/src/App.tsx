@@ -1,14 +1,21 @@
-import Login from "./pages/auth/Login.tsx";
-import Signup from "./pages/auth/Singup.tsx";
+import {Outlet} from "react-router-dom";
+import React from 'react';
 
-function App() {
+const App: React.FC = () => {
 
     return (
-        <>
-            <Login/>
-            <Signup/>
-        </>
-    )
+        <div className="bg-blue-100">
+            <h1>Wypożyczalnia Samochodów</h1>
+
+            <main>
+                <Outlet/>
+            </main>
+
+            <footer>
+                <p>Informacje kontaktowe</p>
+            </footer>
+        </div>
+    );
 }
 
-export default App
+export default App;

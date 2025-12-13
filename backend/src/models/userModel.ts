@@ -14,9 +14,10 @@ export interface IUser extends Document {
     passwordResetToken?: string;
     passwordResetExpires?: Date;
     active?: boolean;
-    comparePassword(
-        candidatePassword: string,
-        password: string,
+    refreshToken?: string;
+    compareValues(
+        candidateValue: string,
+        currentValue: string,
     ): Promise<boolean>;
 }
 
@@ -60,6 +61,10 @@ const userSchema = new Schema<IUser>({
             message: 'Passwords are different',
         },
     },
+    refreshToken: {
+        type: String,
+        select: false,
+    },
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
@@ -71,17 +76,21 @@ const userSchema = new Schema<IUser>({
 });
 
 userSchema.pre('save', async function () {
-    if (!this.isModified('password')) return;
+    if (this.isModified('password')) {
+        this.password = await bcrypt.hash(this.password, 12);
+        this.passwordConfirm = undefined;
+    }
 
-    this.password = await bcrypt.hash(this.password, 12);
-    this.passwordConfirm = undefined;
+    if (this.isModified('refreshToken')) {
+        this.refreshToken = await bcrypt.hash(this.refreshToken, 12);
+    }
 });
 
-userSchema.methods.comparePassword = async (
-    candidatePassword: string,
-    password: string,
+userSchema.methods.compareValues = async (
+    candidateValue: string,
+    currentValue: string,
 ): Promise<boolean> => {
-    return await bcrypt.compare(candidatePassword, password);
+    return await bcrypt.compare(candidateValue, currentValue);
 };
 
 const User: Model<IUser> = mongoose.model<IUser>('User', userSchema);
