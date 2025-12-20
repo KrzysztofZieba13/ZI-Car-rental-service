@@ -1,10 +1,14 @@
-import {defineConfig} from 'vite'
-import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import * as path from 'node:path';
 
 export default defineConfig({
-    plugins: [
-        react(),
-        tailwindcss(),
-    ],
-})
+    resolve: {
+        alias: {
+            '@images': path.resolve(__dirname, './src/assets/images'),
+            '@logo': path.resolve(__dirname, './src/assets/logo'),
+        },
+    },
+    plugins: [react(), tailwindcss()],
+});

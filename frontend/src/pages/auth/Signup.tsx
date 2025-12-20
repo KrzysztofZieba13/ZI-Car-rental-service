@@ -1,6 +1,12 @@
-import {useFormik} from "formik";
+import { useFormik } from 'formik';
 import React from 'react';
-import {signup} from "../../services/authService.ts";
+import { signup } from '../../services/authService.ts';
+import Auth from './Auth.tsx';
+import PrimaryHeader from '../../components/headers/PrimaryHeader.tsx';
+import Form from '../../components/forms/Form.tsx';
+import Input from '../../components/forms/Input.tsx';
+import Button from '../../components/buttons/Button.tsx';
+import LinkUnderline from '../../components/nav/LinkUnderline.tsx';
 
 export interface SignupFormValues {
     name: string;
@@ -24,49 +30,46 @@ const Signup: React.FC = () => {
     });
 
     return (
-        <div>
-            <h1 className="text-3xl">Signup with Google!</h1>
-
-            <form onSubmit={formik.handleSubmit}>
-                <input
-                    type='name'
-                    name='name'
-                    onChange={formik.handleChange}
+        <Auth>
+            <PrimaryHeader>Create new account</PrimaryHeader>
+            <Form handleSubmit={formik.handleSubmit}>
+                <Input
+                    type="name"
+                    name="name"
+                    handleChange={formik.handleChange}
                     value={formik.values.name}
-                    className="border p-2 my-1 block"
+                    label="Name"
                     placeholder="Name"
                 />
-                <input
-                    type='email'
-                    name='email'
-                    onChange={formik.handleChange}
+                <Input
+                    type="email"
+                    name="email"
+                    handleChange={formik.handleChange}
                     value={formik.values.email}
-                    className="border p-2 my-1 block"
+                    label="Email"
                     placeholder="Email"
                 />
-                <input
-                    type='password'
-                    name='password'
-                    onChange={formik.handleChange}
+                <Input
+                    type="password"
+                    name="password"
+                    handleChange={formik.handleChange}
                     value={formik.values.password}
-                    className="border p-2 my-1 block"
+                    label="Password"
                     placeholder="Password"
                 />
-                <input
-                    type='password'
-                    name='passwordConfirm'
-                    onChange={formik.handleChange}
+                <Input
+                    type="password"
+                    name="passwordConfirm"
+                    handleChange={formik.handleChange}
                     value={formik.values.passwordConfirm}
-                    className="border p-2 my-1 block"
+                    label="Password Confirm"
                     placeholder="Password Confirm"
                 />
-                <button type="submit"
-                        className="bg-blue-600 text-white p-2 rounded mt-2">
-                    Signup
-                </button>
-            </form>
-        </div>
+                <Button type="submit">Sign up</Button>
+                <LinkUnderline to="/login">Use existing account</LinkUnderline>
+            </Form>
+        </Auth>
     );
-}
+};
 
 export default Signup;

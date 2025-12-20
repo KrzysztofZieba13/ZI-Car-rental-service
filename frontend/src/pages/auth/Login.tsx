@@ -1,48 +1,52 @@
-import {useFormik} from "formik";
+import { useFormik } from 'formik';
+import { login } from '../../services/authService.ts';
+import Auth from './Auth.tsx';
+import PrimaryHeader from '../../components/headers/PrimaryHeader.tsx';
+import Form from '../../components/forms/Form.tsx';
+import Input from '../../components/forms/Input.tsx';
+import Button from '../../components/buttons/Button.tsx';
+import LinkUnderline from '../../components/nav/LinkUnderline.tsx';
 
-interface ILoginFormValues {
+export interface LoginFormValues {
     email: string;
     password: string;
 }
 
 const Login = () => {
-    const formik = useFormik<ILoginFormValues>({
+    const formik = useFormik<LoginFormValues>({
         initialValues: {
             email: '',
-            password: ''
+            password: '',
         },
-        onSubmit: (values: ILoginFormValues) => {
-            console.log('Dane do wysłania:', values);
+        onSubmit: async (data: LoginFormValues) => {
+            data = await login(data);
         },
     });
 
     return (
-        <div>
-            <h1 className="text-3xl">Sign in with Google!</h1>
-
-            <form onSubmit={formik.handleSubmit}>
-                <input
-                    type='email'
-                    name='email'
-                    onChange={formik.handleChange}
+        <Auth>
+            <PrimaryHeader>Sign in to your account</PrimaryHeader>
+            <Form handleSubmit={formik.handleSubmit}>
+                <Input
+                    type="email"
+                    name="email"
                     value={formik.values.email}
-                    className="border p-2 my-1 block"
+                    label="Email"
                     placeholder="Email"
+                    handleChange={formik.handleChange}
                 />
-                <input
-                    type='password'
-                    name='password'
-                    onChange={formik.handleChange}
+                <Input
+                    type="password"
+                    name="password"
+                    handleChange={formik.handleChange}
                     value={formik.values.password}
-                    className="border p-2 my-1 block"
-                    placeholder="Hasło"
+                    label="Password"
+                    placeholder="Password"
                 />
-                <button type="submit"
-                        className="bg-blue-600 text-white p-2 rounded mt-2">
-                    Zaloguj
-                </button>
-            </form>
-        </div>
+                <Button type="submit">Sign in</Button>
+                <LinkUnderline to="/signup">No account yet?</LinkUnderline>
+            </Form>
+        </Auth>
     );
 };
 
