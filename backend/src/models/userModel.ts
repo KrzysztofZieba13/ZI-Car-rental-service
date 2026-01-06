@@ -77,11 +77,19 @@ const userSchema = new Schema<IUser>({
 
 userSchema.pre('save', async function () {
     if (this.isModified('password')) {
+        if (!this.password) {
+            throw new Error('Password is missing');
+        }
+
         this.password = await bcrypt.hash(this.password, 12);
         this.passwordConfirm = undefined;
     }
 
     if (this.isModified('refreshToken')) {
+        if (!this.refreshToken) {
+            throw new Error('Refresh token is missing');
+        }
+
         this.refreshToken = await bcrypt.hash(this.refreshToken, 12);
     }
 });

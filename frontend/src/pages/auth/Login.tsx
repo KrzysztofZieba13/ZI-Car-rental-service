@@ -19,7 +19,7 @@ const Login = () => {
             password: '',
         },
         onSubmit: async (data: LoginFormValues) => {
-            data = await login(data);
+            await login(data);
         },
     });
 
@@ -43,7 +43,9 @@ const Login = () => {
                     label="Password"
                     placeholder="Password"
                 />
-                <Button type="submit">Sign in</Button>
+                <Button type="submit" className="mt-2">
+                    Sign in
+                </Button>
                 <LinkUnderline to="/signup">No account yet?</LinkUnderline>
             </Form>
         </Auth>

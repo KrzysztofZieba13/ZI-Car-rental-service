@@ -9,7 +9,7 @@ import { AuthenticationRequest } from './controllerTypes';
 const ENV: string = process.env.NODE_ENV || 'development';
 
 const signToken = (id: Types.ObjectId, jwtExpiresTime: StringValue): string => {
-    const jwtSecret: string = process.env.JWT_SECRET;
+    const jwtSecret: string | undefined = process.env.JWT_SECRET;
     if (!jwtSecret || !jwtExpiresTime) {
         throw new Error('JWT_SECRET is missing or JWT_EXPIRES is not set');
     }
@@ -18,7 +18,7 @@ const signToken = (id: Types.ObjectId, jwtExpiresTime: StringValue): string => {
 };
 
 const getTokenCookies = (path: string = '/') => {
-    const jwtCookieExpireDays: string = process.env.JWT_COOKIE_EXPIRES;
+    const jwtCookieExpireDays: string | undefined = process.env.JWT_COOKIE_EXPIRES;
 
     if (!jwtCookieExpireDays) {
         throw new Error('JWT_COOKIE_EXPIRES is missing');
@@ -83,6 +83,10 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
     const user: IUser = await User.findOne({ email }).select('+password');
 
+    if (!user.password){
+        throw new Error('Password is missing');
+    }
+
     if (!user || !(await user.compareValues(password, user.password))) {
         throw new Error(`Incorrect password or email address`);
     }
@@ -101,6 +105,10 @@ export const refreshToken = async (req: Request, res: Response) => {
         res.clearCookie(JWT_COOKIE_NAME);
     };
 
+    if (!process.env.JWT_SECRET){
+        throw new Error('JWT_SECRET is missing');
+    }
+
     try {
         const decodedToken: any = jwt.verify(
             oldRefreshToken,
@@ -118,6 +126,10 @@ export const refreshToken = async (req: Request, res: Response) => {
                 status: 'fail',
                 message: 'Użytkownik nie istnieje lub token unieważniony.',
             });
+        }
+
+        if (!user.refreshToken){
+            throw new Error('User refresh token is missing');
         }
 
         const matchToken = await user.compareValues(
@@ -157,7 +169,7 @@ export const protect = async (
     next: NextFunction,
 ) => {
     const accessToken = req.cookies[JWT_COOKIE_NAME];
-    const jwtSecret: string = process.env.JWT_SECRET;
+    const jwtSecret: string | undefined = process.env.JWT_SECRET;
 
     if (!accessToken) {
         res.status(401).json({
@@ -167,6 +179,10 @@ export const protect = async (
     }
 
     try {
+        if (!jwtSecret) {
+            throw new Error('JWT_SECRET is missing');
+        }
+
         const decoded: any = await jwtVerifyPromisified(accessToken, jwtSecret);
         const user: IUser | null = await User.findById(decoded.id);
 

@@ -1,10 +1,11 @@
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, Navigate } from 'react-router';
 import { RouterProvider } from 'react-router-dom';
 import Home from './pages/home/Home.tsx';
 import Login from './pages/auth/Login.tsx';
 import Signup from './pages/auth/Signup.tsx';
+import AddCar from './features/car/AddCar.tsx';
 
 const router = createBrowserRouter([
     {
@@ -16,14 +17,24 @@ const router = createBrowserRouter([
                 Component: Home,
             },
             {
-                path: '/signup',
-                Component: Signup,
-            },
-            {
-                path: '/login',
-                Component: Login,
+                path: 'admin',
+                children: [
+                    { index: true, element: <Navigate to="car" replace /> },
+                    { path: 'car', Component: AddCar },
+                    { path: 'cars', Component: AddCar },
+                    { path: 'employee', Component: AddCar },
+                    { path: 'employees', Component: AddCar },
+                ],
             },
         ],
+    },
+    {
+        path: '/signup',
+        Component: Signup,
+    },
+    {
+        path: '/login',
+        Component: Login,
     },
 ]);
 

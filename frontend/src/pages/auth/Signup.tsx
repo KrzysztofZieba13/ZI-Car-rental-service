@@ -65,7 +65,9 @@ const Signup: React.FC = () => {
                     label="Password Confirm"
                     placeholder="Password Confirm"
                 />
-                <Button type="submit">Sign up</Button>
+                <Button type="submit" className="mt-2">
+                    Sign up
+                </Button>
                 <LinkUnderline to="/login">Use existing account</LinkUnderline>
             </Form>
         </Auth>

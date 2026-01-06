@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes';
 import defaultRoutes from './routes/authRoutes';
+import carRoutes from "./routes/carRoutes";
 
 const app: Express = express();
 const corsOptions = {
@@ -20,6 +21,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/api/auth', defaultRoutes);
+app.use('/api/cars', carRoutes);
 app.use('/api/users', userRoutes);
 
 export default app;
