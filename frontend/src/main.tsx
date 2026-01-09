@@ -6,6 +6,8 @@ import Home from './pages/home/Home.tsx';
 import Login from './pages/auth/Login.tsx';
 import Signup from './pages/auth/Signup.tsx';
 import AddCar from './features/car/AddCar.tsx';
+import { AppProvider } from './context/AppContext.tsx';
+import { AxiosInterceptor } from './services/AxiosInterceptor.tsx';
 
 const router = createBrowserRouter([
     {
@@ -40,4 +42,10 @@ const router = createBrowserRouter([
 
 const root: HTMLElement = document.getElementById('root')!;
 
-createRoot(root).render(<RouterProvider router={router} />);
+createRoot(root).render(
+    <AppProvider>
+        <AxiosInterceptor>
+            <RouterProvider router={router} />
+        </AxiosInterceptor>
+    </AppProvider>,
+);
