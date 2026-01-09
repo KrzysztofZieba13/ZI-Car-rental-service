@@ -13,6 +13,7 @@ import {
 import Input from '../../components/forms/Input.tsx';
 import DropzoneImages from '../../components/forms/Dropzone/DropzoneImages.tsx';
 import { createCar } from '../../services/carService.ts';
+import * as Yup from 'yup';
 
 export interface AddCarValues {
     brand: SelectFieldOption | null;
@@ -34,6 +35,26 @@ interface FileWithPreview extends File {
     preview: string;
     isPrimary: boolean;
 }
+
+const validationSchema = Yup.object().shape({
+    brand: Yup.object().nullable().required('Brand is required'),
+    model: Yup.string()
+        .min(2, 'Model name is too short')
+        .max(50, 'Model name is too long')
+        .required('Model is required'),
+    transmission: Yup.object().nullable().required('Transmission is required'),
+    bodyType: Yup.object().nullable().required('Body type is required'),
+    fuelType: Yup.object().nullable().required('Fuel type is required'),
+    seats: Yup.object().nullable().required('Number of seats is required'),
+    doors: Yup.object().nullable().required('Number of doors is required'),
+    images: Yup.array()
+        .min(1, 'At least one image is required')
+        .test('has-primary', 'One image must be set as primary', (images) => {
+            return images
+                ? images.some((img: FileWithPreview) => img.isPrimary)
+                : false;
+        }),
+});
 
 const AddCar = () => {
     const handleSubmit = async (
@@ -77,6 +98,7 @@ const AddCar = () => {
             seats: null,
             images: [],
         },
+        validationSchema: validationSchema,
         onSubmit: handleSubmit,
     });
 
@@ -99,6 +121,11 @@ const AddCar = () => {
                     }}
                     value={formik.values.brand}
                     label="Brand"
+                    error={
+                        formik.touched.brand && formik.errors.brand
+                            ? String(formik.errors.brand)
+                            : ''
+                    }
                 />
                 <Input
                     type="text"
@@ -116,6 +143,12 @@ const AddCar = () => {
                     }}
                     value={formik.values.transmission}
                     label="Transmission"
+                    error={
+                        formik.touched.transmission &&
+                        formik.errors.transmission
+                            ? String(formik.errors.transmission)
+                            : ''
+                    }
                 />
                 <SelectField
                     name="bodyType"
@@ -125,6 +158,11 @@ const AddCar = () => {
                     }}
                     value={formik.values.bodyType}
                     label="Body Type"
+                    error={
+                        formik.touched.bodyType && formik.errors.bodyType
+                            ? String(formik.errors.bodyType)
+                            : ''
+                    }
                 />
                 <SelectField
                     name="fuelType"
@@ -134,6 +172,11 @@ const AddCar = () => {
                     }}
                     value={formik.values.fuelType}
                     label="Fuel Type"
+                    error={
+                        formik.touched.fuelType && formik.errors.fuelType
+                            ? String(formik.errors.fuelType)
+                            : ''
+                    }
                 />
                 <SelectField
                     name="seats"
@@ -143,6 +186,11 @@ const AddCar = () => {
                     }}
                     value={formik.values.seats}
                     label="Seats"
+                    error={
+                        formik.touched.seats && formik.errors.seats
+                            ? String(formik.errors.seats)
+                            : ''
+                    }
                 />
                 <SelectField
                     name="doors"
@@ -152,6 +200,11 @@ const AddCar = () => {
                     }}
                     value={formik.values.doors}
                     label="Doors"
+                    error={
+                        formik.touched.doors && formik.errors.doors
+                            ? String(formik.errors.doors)
+                            : ''
+                    }
                 />
 
                 <DropzoneImages
@@ -162,6 +215,11 @@ const AddCar = () => {
                     }}
                     value={formik.values.images}
                     onClearDropzone={clearDropzone}
+                    error={
+                        formik.touched.images && formik.errors.images
+                            ? String(formik.errors.images)
+                            : ''
+                    }
                 />
                 <button
                     type="submit"

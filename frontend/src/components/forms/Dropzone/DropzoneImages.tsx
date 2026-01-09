@@ -8,6 +8,7 @@ interface DropzoneProps {
     onFilesChange: (files: FileWithPreview[]) => void;
     value: FileWithPreview[];
     onClearDropzone: () => void;
+    error: string;
 }
 
 interface FileWithPreview extends File {
@@ -21,6 +22,7 @@ const DropzoneImages = ({
     onFilesChange,
     onClearDropzone,
     value,
+    error,
 }: DropzoneProps) => {
     const acceptedFileTypes = {
         'image/*': ['.jpeg', '.jpg', '.png', '.webp'],
@@ -83,6 +85,7 @@ const DropzoneImages = ({
                     />
                 )}
             </Dropzone>
+            <span className="text-sm text-red-800">{error}</span>
         </div>
     );
 };

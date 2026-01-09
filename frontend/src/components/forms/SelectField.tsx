@@ -7,6 +7,7 @@ interface SelectFieldProps {
     value: SelectFieldOption | null;
     label?: string;
     onChange: (option: SingleValue<SelectFieldOption>) => void;
+    error: string;
 }
 
 const SelectField = ({
@@ -15,6 +16,7 @@ const SelectField = ({
     value,
     label,
     onChange,
+    error,
 }: SelectFieldProps) => {
     return (
         <div className="flex w-full flex-col gap-1">
@@ -39,6 +41,7 @@ const SelectField = ({
                 }}
                 menuPosition="fixed"
             />
+            <span className="text-sm text-red-800">{error}</span>
         </div>
     );
 };
