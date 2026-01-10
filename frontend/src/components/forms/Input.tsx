@@ -8,6 +8,7 @@ interface InputProps {
     value: string | number;
     placeholder: string;
     className?: string;
+    error: string;
     handleChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 const Input = ({
@@ -17,6 +18,7 @@ const Input = ({
     value,
     placeholder,
     className,
+    error,
     handleChange,
 }: InputProps) => {
     return (
@@ -33,6 +35,7 @@ const Input = ({
                 )}
                 placeholder={placeholder}
             />
+            <span className="text-sm text-red-800">{error}</span>
         </div>
     );
 };

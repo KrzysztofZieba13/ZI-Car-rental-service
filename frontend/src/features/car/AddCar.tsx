@@ -134,6 +134,11 @@ const AddCar = () => {
                     value={formik.values.model}
                     placeholder="Model"
                     handleChange={formik.handleChange}
+                    error={
+                        formik.touched.model && formik.errors.model
+                            ? String(formik.errors.model)
+                            : ''
+                    }
                 />
                 <SelectField
                     name="transmission"
