@@ -9,6 +9,7 @@ interface SelectFieldProps {
     label?: string;
     onChange: (option: SingleValue<SelectFieldOption>) => void;
     displayInline?: boolean;
+    isClearable?: boolean;
     error: string;
 }
 
@@ -19,6 +20,7 @@ const SelectField = ({
     label,
     onChange,
     displayInline,
+    isClearable = false,
     error,
 }: SelectFieldProps) => {
     return (
@@ -37,6 +39,7 @@ const SelectField = ({
                     value={value}
                     onChange={onChange}
                     className="w-full"
+                    isClearable={isClearable}
                     styles={{
                         control: (baseStyles, state) => ({
                             ...baseStyles,

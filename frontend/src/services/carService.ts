@@ -1,5 +1,10 @@
 import ApiClient from './apiClient.ts';
 
+interface CarParams {
+    brand?: string;
+    model?: string;
+}
+
 export const createCar = async (formData: FormData) => {
     const res = await ApiClient.post('/cars', formData, {
         headers: {
@@ -9,8 +14,13 @@ export const createCar = async (formData: FormData) => {
     return res.data;
 };
 
-export const getAllCars = async () => {
-    const res = await ApiClient.get('/cars');
+export const getAllCars = async ({ brand, model }: CarParams = {}) => {
+    const res = await ApiClient.get('/cars', {
+        params: {
+            brand,
+            model,
+        },
+    });
     return res.data;
 };
 

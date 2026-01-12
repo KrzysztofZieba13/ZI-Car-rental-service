@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Car from "../models/carModel";
 import {unlinkImages} from "../utils/utils";
+import {PipelineStage} from "mongoose";
 
 interface MulterRequest extends Request {
     files: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] };
@@ -44,19 +45,69 @@ export const create = async (req: Request, res: Response) => {
 
 export const getAll = async (req: Request, res: Response) => {
     try {
-        const cars = await Car.find({});
+        const { model, brand } = req.query;
 
-        if (!cars || cars.length === 0) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'No cars found in the database'
+        if (!model && !brand) {
+            const cars = await Car.find({});
+
+            return res.status(200).json({
+                status: 'success',
+                results: cars.length,
+                cars: cars,
             });
         }
+
+        const must: any[] = [];
+        const filter: any[] = [];
+
+        if (model) {
+            must.push({
+                autocomplete: {
+                    query: model,
+                    path: 'model',
+                    fuzzy: {
+                        maxEdits: 1,
+                        prefixLength: 1
+                    }
+                }
+            })
+        }
+
+        if (brand) {
+            filter.push({
+                text: {
+                    query: brand,
+                    path: 'brand'
+                }
+            })
+        }
+
+        const compound: any = {};
+
+        if (must.length > 0) {
+            compound.must = must;
+        }
+        if (filter.length > 0) {
+            compound.filter = filter;
+        }
+
+        const pipeline: PipelineStage[] = [
+            {
+                $search: {
+                    index: 'default',
+                    compound: compound
+                }
+            }
+        ];
+
+        const cars = await Car.aggregate(pipeline);
+
         return res.status(200).json({
             status: 'success',
             results: cars.length,
             cars: cars,
         });
+
     } catch (err){
         return res.status(500).json({
             status: 'error',
