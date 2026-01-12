@@ -22,7 +22,7 @@ const Notification = ({ status, children }: NotificationProps) => {
                 type="button"
                 variant="transparent"
                 onClick={() => setNotification(null)}
-                className="absolute right-2 bottom-0 text-sm text-neutral-400"
+                className="absolute right-2 bottom-0 text-sm text-stone-400"
             >
                 Hide
             </Button>

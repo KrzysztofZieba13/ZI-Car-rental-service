@@ -12,29 +12,16 @@ import {
 } from '../../constants/carOptions.ts';
 import Input from '../../components/forms/Input.tsx';
 import DropzoneImages from '../../components/forms/Dropzone/DropzoneImages.tsx';
-import { createCar } from '../../services/carService.ts';
+import { createCar, getCar, updateCar } from '../../services/carService.ts';
 import * as Yup from 'yup';
-
-export interface AddCarValues {
-    brand: SelectFieldOption | null;
-    transmission: SelectFieldOption | null;
-    model: string;
-    bodyType: SelectFieldOption | null;
-    fuelType: SelectFieldOption | null;
-    doors: SelectFieldOption | null;
-    seats: SelectFieldOption | null;
-    images: FileWithPreview[];
-}
-
-export interface SelectFieldOption {
-    value: string;
-    label: string;
-}
-
-interface FileWithPreview extends File {
-    preview: string;
-    isPrimary: boolean;
-}
+import type { FileWithPreview, ServerImage } from '../../types/formTypes.ts';
+import type { CarValues, LoaderCarType } from '../../types/carTypes.ts';
+import {
+    type LoaderFunctionArgs,
+    useLoaderData,
+    useParams,
+} from 'react-router';
+import { getFilenameFromImageUrl, getImageUrl } from '../../utils/util.ts';
 
 const validationSchema = Yup.object().shape({
     brand: Yup.object().nullable().required('Brand is required'),
@@ -56,10 +43,35 @@ const validationSchema = Yup.object().shape({
         }),
 });
 
-const AddCar = () => {
+export const handleLoadCar = async ({ params }: LoaderFunctionArgs) => {
+    const { id } = params;
+    const data = await getCar(id!);
+    return { car: data.car };
+};
+
+const mapImagesForPreview = (images: string[], primaryImg: string) => {
+    return images.map((img) => {
+        return {
+            name: getFilenameFromImageUrl(img) ?? '',
+            isPrimary: img === primaryImg,
+            preview: getImageUrl(img),
+            isFromServer: true as const,
+        };
+    });
+};
+
+const AdminCar = () => {
+    const { id } = useParams();
+    const { car } = useLoaderData() as LoaderCarType;
+
+    const isEditPage: boolean = Boolean(id);
+    const imagesFromServer: ServerImage[] = id
+        ? mapImagesForPreview(car?.images, car?.primaryImage)
+        : [];
+
     const handleSubmit = async (
-        values: AddCarValues,
-        { resetForm }: FormikHelpers<AddCarValues>,
+        values: CarValues,
+        { resetForm }: FormikHelpers<CarValues>,
     ) => {
         const formData = new FormData();
 
@@ -70,8 +82,12 @@ const AddCar = () => {
         formData.append('fuelType', values.fuelType?.value || '');
         formData.append('doors', values.doors?.value || '');
         formData.append('seats', values.seats?.value || '');
-        values.images.forEach((image: FileWithPreview) => {
-            formData.append('image', image);
+        values.images.forEach((image: FileWithPreview | ServerImage) => {
+            if (!image.isFromServer) {
+                formData.append('image', image);
+            } else {
+                formData.append('existingImages', image.name);
+            }
 
             if (image.isPrimary) {
                 formData.append('primaryImageName', image.name);
@@ -79,24 +95,41 @@ const AddCar = () => {
         });
 
         try {
-            await createCar(formData);
-            clearDropzone();
-            resetForm();
+            if (id) {
+                await updateCar(id, formData);
+            } else {
+                await createCar(formData);
+                clearDropzone();
+                resetForm();
+            }
         } catch (err) {
             console.log(err);
         }
     };
 
-    const formik = useFormik<AddCarValues>({
+    const formik = useFormik<CarValues>({
+        enableReinitialize: true,
         initialValues: {
-            brand: null,
-            model: '',
-            transmission: null,
-            bodyType: null,
-            fuelType: null,
-            doors: null,
-            seats: null,
-            images: [],
+            brand: car?.brand
+                ? { label: car.brand.toUpperCase(), value: car.brand }
+                : null,
+            model: car?.model || '',
+            transmission: car?.transmission
+                ? { label: car.transmission, value: car.transmission }
+                : null,
+            bodyType: car?.bodyType
+                ? { label: car.bodyType, value: car.bodyType }
+                : null,
+            fuelType: car?.fuelType
+                ? { label: car.fuelType, value: car.fuelType }
+                : null,
+            doors: car?.doors
+                ? { label: `${car.doors} doors`, value: car.doors }
+                : null,
+            seats: car?.seats
+                ? { label: `${car.seats} seats`, value: car.seats }
+                : null,
+            images: imagesFromServer,
         },
         validationSchema: validationSchema,
         onSubmit: handleSubmit,
@@ -112,7 +145,11 @@ const AddCar = () => {
                 handleSubmit={formik.handleSubmit}
                 className="flex w-1/2 flex-col items-center gap-5 bg-white px-12 py-18"
             >
-                <PrimaryHeader>Add new car</PrimaryHeader>
+                <PrimaryHeader>
+                    {isEditPage
+                        ? `Edit ${formik.values.brand?.label.toUpperCase()} ${formik.values.model.toUpperCase()}`
+                        : 'Add new car'}
+                </PrimaryHeader>
                 <SelectField
                     name="brand"
                     options={brandOptions}
@@ -237,4 +274,4 @@ const AddCar = () => {
     );
 };
 
-export default AddCar;
+export default AdminCar;

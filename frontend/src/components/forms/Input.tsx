@@ -8,7 +8,8 @@ interface InputProps {
     value: string | number;
     placeholder: string;
     className?: string;
-    error: string;
+    displayInline?: boolean;
+    error?: string;
     handleChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 const Input = ({
@@ -18,23 +19,31 @@ const Input = ({
     value,
     placeholder,
     className,
+    displayInline,
     error,
     handleChange,
 }: InputProps) => {
     return (
         <div className="flex w-full flex-col gap-1">
-            <label>{label}</label>
-            <input
-                type={type}
-                name={name}
-                onChange={handleChange}
-                value={value}
+            <div
                 className={cn(
-                    'w-full rounded-sm border border-neutral-300 p-1.5 focus:border-yellow-700 focus:outline-sky-700',
-                    className,
+                    'flex flex-col gap-1',
+                    displayInline && 'flex-row items-center gap-2',
                 )}
-                placeholder={placeholder}
-            />
+            >
+                <label>{label}</label>
+                <input
+                    type={type}
+                    name={name}
+                    onChange={handleChange}
+                    value={value}
+                    className={cn(
+                        'w-full rounded-sm border border-neutral-300 p-1.5 focus:border-yellow-700 focus:outline-sky-700',
+                        className,
+                    )}
+                    placeholder={placeholder}
+                />
+            </div>
             <span className="text-sm text-red-800">{error}</span>
         </div>
     );

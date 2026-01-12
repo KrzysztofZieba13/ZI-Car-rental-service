@@ -1,12 +1,13 @@
 import { useEffect, type MouseEvent } from 'react';
 import Dropzone from './Dropzone.tsx';
 import DropzoneImagesPreview from './DropzoneImagesPreview.tsx';
+import type { ServerImage } from '../../../types/formTypes.ts';
 
 interface DropzoneProps {
     name: string;
     label?: string;
-    onFilesChange: (files: FileWithPreview[]) => void;
-    value: FileWithPreview[];
+    onFilesChange: (files: (FileWithPreview | ServerImage)[]) => void;
+    value: (FileWithPreview | ServerImage)[];
     onClearDropzone: () => void;
     error: string;
 }
@@ -73,7 +74,7 @@ const DropzoneImages = ({
                 acceptedFileTypes={acceptedFileTypes}
             >
                 {value.length === 0 ? (
-                    <p className="text-center text-neutral-500">
+                    <p className="text-center text-stone-500">
                         Drag 'n' drop some pictures of your car, or click to
                         select pictures
                     </p>

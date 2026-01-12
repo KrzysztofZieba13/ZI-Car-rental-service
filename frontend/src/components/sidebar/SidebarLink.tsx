@@ -17,7 +17,7 @@ const SidebarLink = ({ path, children }: SidebarLinkProps) => {
     const currentPath: Path = useResolvedPath(path);
     const match: PathMatch<string> | null = useMatch({
         path: currentPath.pathname,
-        end: true,
+        end: false,
     });
     const isMatched: boolean = !!match;
 

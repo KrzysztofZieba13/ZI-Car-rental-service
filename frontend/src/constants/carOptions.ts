@@ -1,4 +1,4 @@
-import type { SelectFieldOption } from '../features/car/AddCar.tsx';
+import type { SelectFieldOption } from '../types/formTypes.ts';
 
 export const brandOptions: SelectFieldOption[] = [
     { value: 'bmw', label: 'BMW' },

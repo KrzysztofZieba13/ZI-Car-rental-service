@@ -8,8 +8,11 @@ export const AxiosInterceptor = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         const resInterceptor = apiClient.interceptors.response.use(
             (response) => {
-                const { message } = response.data;
-                setNotification({ message, status: 'success' });
+                const { message, status } = response.data;
+                setNotification({
+                    message: message || status,
+                    status: 'success',
+                });
 
                 return response;
             },

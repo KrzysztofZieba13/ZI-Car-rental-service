@@ -5,9 +5,10 @@ import { RouterProvider } from 'react-router-dom';
 import Home from './pages/home/Home.tsx';
 import Login from './pages/auth/Login.tsx';
 import Signup from './pages/auth/Signup.tsx';
-import AddCar from './features/car/AddCar.tsx';
+import AdminCar, { handleLoadCar } from './features/car/AdminCar.tsx';
 import { AppProvider } from './context/AppContext.tsx';
 import { AxiosInterceptor } from './services/AxiosInterceptor.tsx';
+import ManageCars, { handleLoadCars } from './features/car/ManageCars.tsx';
 
 const router = createBrowserRouter([
     {
@@ -22,10 +23,23 @@ const router = createBrowserRouter([
                 path: 'admin',
                 children: [
                     { index: true, element: <Navigate to="car" replace /> },
-                    { path: 'car', Component: AddCar },
-                    { path: 'cars', Component: AddCar },
-                    { path: 'employee', Component: AddCar },
-                    { path: 'employees', Component: AddCar },
+                    {
+                        path: 'car',
+                        loader: () => ({ car: null }),
+                        Component: AdminCar,
+                    },
+                    {
+                        path: 'cars',
+                        loader: handleLoadCars,
+                        Component: ManageCars,
+                    },
+                    {
+                        path: 'cars/:id',
+                        loader: handleLoadCar,
+                        Component: AdminCar,
+                    },
+                    { path: 'employee', Component: AdminCar },
+                    { path: 'employees', Component: AdminCar },
                 ],
             },
         ],

@@ -1,6 +1,7 @@
 import { type MouseEvent } from 'react';
+import type { ServerImage } from '../../../types/formTypes.ts';
 interface DropzoneImagesPreviewProps {
-    images: FileWithPreview[];
+    images: (FileWithPreview | ServerImage)[];
     onTogglePrimary: ImageHandler;
     onRemove: ImageHandler;
 }

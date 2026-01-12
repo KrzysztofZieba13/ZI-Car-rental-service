@@ -23,7 +23,7 @@ const Button = ({
                 'cursor-pointer p-2 text-white transition-all duration-300',
                 variant === 'primary' && 'bg-red-800 hover:bg-red-900',
                 variant === 'secondary' && 'bg-sky-800 hover:bg-sky-900',
-                variant === 'transparent' && 'bg-transparent text-white',
+                variant === 'transparent' && 'bg-transparent',
                 className,
             )}
             onClick={onClick}
