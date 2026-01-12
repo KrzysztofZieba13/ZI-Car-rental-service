@@ -1,7 +1,15 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import {
+    createContext,
+    useContext,
+    useState,
+    type ReactNode,
+    useRef,
+    useEffect,
+    useCallback,
+} from 'react';
 interface AppContextType {
     notification: NotificationType | null;
-    setNotification: (message: NotificationType | null) => void;
+    handleNotification: (message: NotificationType | null) => void;
 }
 
 interface NotificationType {
@@ -16,8 +24,31 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         null,
     );
 
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    }, []);
+
+    const handleNotification = useCallback((data: NotificationType | null) => {
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+
+        setNotification(data);
+
+        if (data) {
+            timerRef.current = setTimeout(() => {
+                setNotification(null);
+                timerRef.current = null;
+            }, 3000);
+        }
+    }, []);
+
     return (
-        <AppContext.Provider value={{ notification, setNotification }}>
+        <AppContext.Provider value={{ notification, handleNotification }}>
             {children}
         </AppContext.Provider>
     );

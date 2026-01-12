@@ -19,9 +19,13 @@ import type { CarValues, LoaderCarType } from '../../types/carTypes.ts';
 import {
     type LoaderFunctionArgs,
     useLoaderData,
+    useNavigation,
     useParams,
+    useRevalidator,
 } from 'react-router';
 import { getFilenameFromImageUrl, getImageUrl } from '../../utils/util.ts';
+import { useApp } from '../../context/AppContext.tsx';
+import Loader from '../../components/Loader.tsx';
 
 const validationSchema = Yup.object().shape({
     brand: Yup.object().nullable().required('Brand is required'),
@@ -63,8 +67,10 @@ const mapImagesForPreview = (images: string[], primaryImg: string) => {
 const AdminCar = () => {
     const { id } = useParams();
     const { car } = useLoaderData() as LoaderCarType;
-
+    const { handleNotification } = useApp();
+    const revalidator = useRevalidator();
     const isEditPage: boolean = Boolean(id);
+    const navigation = useNavigation();
     const imagesFromServer: ServerImage[] = id
         ? mapImagesForPreview(car?.images, car?.primaryImage)
         : [];
@@ -97,11 +103,16 @@ const AdminCar = () => {
         try {
             if (id) {
                 await updateCar(id, formData);
+                revalidator.revalidate();
             } else {
                 await createCar(formData);
                 clearDropzone();
                 resetForm();
             }
+            handleNotification({
+                message: `Successfully ${id ? 'updated' : 'created'} car`,
+                status: 'success',
+            });
         } catch (err) {
             console.log(err);
         }
@@ -139,15 +150,17 @@ const AdminCar = () => {
     const clearDropzone = () =>
         images.forEach((file) => URL.revokeObjectURL(file.preview));
 
+    const isLoading = formik.isSubmitting || navigation.state !== 'idle';
     return (
         <div className="my-20 flex justify-center">
             <Form
                 handleSubmit={formik.handleSubmit}
-                className="flex w-1/2 flex-col items-center gap-5 bg-white px-12 py-18"
+                className="relative flex w-1/2 flex-col items-center gap-5 bg-white px-12 py-18"
             >
+                {isLoading && <Loader />}
                 <PrimaryHeader>
                     {isEditPage
-                        ? `Edit ${formik.values.brand?.label.toUpperCase()} ${formik.values.model.toUpperCase()}`
+                        ? `Edit ${car.brand.toUpperCase()} ${car.model.toUpperCase()}`
                         : 'Add new car'}
                 </PrimaryHeader>
                 <SelectField

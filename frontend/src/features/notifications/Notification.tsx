@@ -9,11 +9,11 @@ interface NotificationProps {
 }
 
 const Notification = ({ status, children }: NotificationProps) => {
-    const { setNotification } = useApp();
+    const { handleNotification } = useApp();
     return (
         <div
             className={cn(
-                'fixed bottom-5 left-5 w-90 rounded bg-stone-950 p-4 pb-8 text-white',
+                'fixed right-5 bottom-5 z-10 w-90 rounded bg-stone-950 p-4 pb-8 text-white',
                 status === 'success' && 'border-2 border-emerald-900',
                 status === 'error' && 'border-2 border-red-900',
             )}
@@ -21,7 +21,7 @@ const Notification = ({ status, children }: NotificationProps) => {
             <Button
                 type="button"
                 variant="transparent"
-                onClick={() => setNotification(null)}
+                onClick={() => handleNotification(null)}
                 className="absolute right-2 bottom-0 text-sm text-stone-400"
             >
                 Hide
