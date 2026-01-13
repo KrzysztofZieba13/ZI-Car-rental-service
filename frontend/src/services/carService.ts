@@ -37,3 +37,8 @@ export const updateCar = async (id: string, data: FormData) => {
     });
     return res.data;
 };
+
+export const deleteCar = async (id: string) => {
+    const res = await ApiClient.delete(`/cars/${id}`);
+    return res.data;
+};

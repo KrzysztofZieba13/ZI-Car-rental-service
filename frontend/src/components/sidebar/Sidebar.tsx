@@ -13,12 +13,6 @@ const Sidebar = () => {
                 <ul className={cn('flex w-full flex-col justify-center')}>
                     <SidebarLink path="/admin/car">Add Car</SidebarLink>
                     <SidebarLink path="/admin/cars">Manage Cars</SidebarLink>
-                    <SidebarLink path="/admin/employee">
-                        Add Employee
-                    </SidebarLink>
-                    <SidebarLink path="/admin/employees">
-                        Manage Employees
-                    </SidebarLink>
                 </ul>
             </nav>
         </aside>

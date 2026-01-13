@@ -114,7 +114,7 @@ const AdminCar = () => {
                 status: 'success',
             });
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
     };
 

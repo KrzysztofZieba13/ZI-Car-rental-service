@@ -4,17 +4,35 @@ import Button from '../buttons/Button.tsx';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Card from './Card.tsx';
 import type { LoadedCarType } from '../../types/carTypes.ts';
-import { Link } from 'react-router';
+import { Link, useRevalidator } from 'react-router';
+import { deleteCar } from '../../services/carService.ts';
+import { useApp } from '../../context/AppContext.tsx';
 
 const CarCard = ({ car }: { car: LoadedCarType }) => {
+    const { revalidate } = useRevalidator();
     const brand: string = car.brand.toUpperCase();
     const model: string = car.model;
+    const { handleNotification } = useApp();
 
     const carPrimaryImage: string = car.primaryImage;
     const primaryImgUrl: string = `${import.meta.env.VITE_SERVER_URL}${carPrimaryImage.split('/').at(1)}`;
     const isWebpPrimary = carPrimaryImage.endsWith('.webp');
     const primaryImageWebpSrc: string = isWebpPrimary ? primaryImgUrl : '';
     const primaryImageJpgSrc: string = !isWebpPrimary ? primaryImgUrl : '';
+
+    const handleDelete = async () => {
+        try {
+            const id: string = car._id;
+            await deleteCar(id);
+            await revalidate();
+            handleNotification({
+                message: `Successfully deleted car`,
+                status: 'success',
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     return (
         <Card>
@@ -68,6 +86,7 @@ const CarCard = ({ car }: { car: LoadedCarType }) => {
                         type="button"
                         variant="transparent"
                         className="flex items-center gap-0.5 p-0 text-stone-700 hover:text-red-800"
+                        onClick={handleDelete}
                     >
                         <TrashIcon className="size-3.5" />
                         Delete

@@ -4,7 +4,12 @@ import SelectField from '../../components/forms/SelectField.tsx';
 import { brandOptions } from '../../constants/carOptions.ts';
 import { useFormik } from 'formik';
 import type { SelectFieldOption } from '../../types/formTypes.ts';
-import { type LoaderFunctionArgs, useSubmit } from 'react-router';
+import {
+    type LoaderFunctionArgs,
+    useNavigation,
+    useRevalidator,
+    useSubmit,
+} from 'react-router';
 import * as Yup from 'yup';
 import PrimaryHeader from '../../components/headers/PrimaryHeader.tsx';
 import CarCard from '../../components/card/CarCard.tsx';
@@ -13,6 +18,7 @@ import { useLoaderData } from 'react-router';
 import { getAllCars } from '../../services/carService.ts';
 import type { LoadedCarType, LoaderAllCarsType } from '../../types/carTypes.ts';
 import { useEffect } from 'react';
+import Loader from '../../components/Loader.tsx';
 
 interface ManageCarsValues {
     brand: SelectFieldOption | null;
@@ -39,6 +45,8 @@ export const handleLoadCars = async ({ request }: LoaderFunctionArgs) => {
 const ManageCars = () => {
     const { cars } = useLoaderData() as LoaderAllCarsType;
     const submit = useSubmit();
+    const navigation = useNavigation();
+    const revalidator = useRevalidator();
 
     const formik = useFormik<ManageCarsValues>({
         initialValues: {
@@ -62,6 +70,9 @@ const ManageCars = () => {
 
         return () => clearTimeout(timer);
     }, [formik.values.brand, formik.values.model]);
+
+    const isLoading: boolean =
+        navigation.state !== 'idle' || revalidator.state !== 'idle';
 
     return (
         <div className="m-20 flex flex-col justify-center gap-5 bg-white px-8 py-12">
@@ -106,6 +117,7 @@ const ManageCars = () => {
                 </div>
             ) : (
                 <CarList>
+                    {isLoading && <Loader />}
                     {cars.length > 0 &&
                         cars.map((car: LoadedCarType) => (
                             <CarCard key={car._id} car={car} />

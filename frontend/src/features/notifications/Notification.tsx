@@ -13,7 +13,7 @@ const Notification = ({ status, children }: NotificationProps) => {
     return (
         <div
             className={cn(
-                'fixed right-5 bottom-5 z-10 w-90 rounded bg-stone-950 p-4 pb-8 text-white',
+                'fixed right-5 bottom-5 z-200 w-90 rounded bg-stone-950 p-4 pb-8 text-white',
                 status === 'success' && 'border-2 border-emerald-900',
                 status === 'error' && 'border-2 border-red-900',
             )}
