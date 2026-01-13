@@ -42,7 +42,7 @@ const DropzoneImagesPreview = ({
                     )}
                     <button
                         onClick={(e) => onRemove(e, file.name)}
-                        className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-xs text-white"
+                        className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-stone-900 text-xs text-white"
                     >
                         ✕
                     </button>

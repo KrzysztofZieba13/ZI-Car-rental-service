@@ -10,9 +10,34 @@ export const AxiosInterceptor = ({ children }: { children: ReactNode }) => {
             (response) => {
                 return response;
             },
-            (error) => {
-                const message = 'Server Error: Something went wrong!';
-                handleNotification({ message, status: 'error' });
+            async (error) => {
+                const originalRequest = error.config;
+
+                if (
+                    error.response?.status === 401 &&
+                    !originalRequest._retry &&
+                    !originalRequest.url?.includes('/auth/refresh-token')
+                ) {
+                    originalRequest._retry = true;
+                    try {
+                        await apiClient.get('/auth/refresh-token');
+                        return apiClient(originalRequest);
+                    } catch (refreshError) {
+                        return Promise.reject(refreshError);
+                    }
+                }
+
+                const status = error.response?.status;
+
+                if (status?.toString().startsWith('5')) {
+                    const message = 'Server Error: Something went wrong!';
+                    handleNotification({ message, status: 'error' });
+                } else if (status && status !== 401) {
+                    handleNotification({
+                        message: error.response?.data?.message,
+                        status: 'error',
+                    });
+                }
                 return Promise.reject(error);
             },
         );

@@ -64,6 +64,8 @@ const ManageCars = () => {
     });
 
     useEffect(() => {
+        console.log('co');
+        if (!formik.values.brand && !formik.values.model) return;
         const timer = setTimeout(() => {
             formik.submitForm();
         }, 500);
@@ -112,7 +114,7 @@ const ManageCars = () => {
             </Form>
 
             {cars.length === 0 ? (
-                <div className="mt-20 mb-10 text-center text-xl text-neutral-500">
+                <div className="mt-20 mb-10 text-center text-xl text-stone-500">
                     Sorry... No cars found
                 </div>
             ) : (

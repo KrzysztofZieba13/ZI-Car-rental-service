@@ -23,7 +23,7 @@ const Dropzone = ({
         <div className="w-full cursor-pointer">
             <div
                 {...getRootProps()}
-                className="border-2 border-dashed border-neutral-300 px-5 py-12"
+                className="border-2 border-dashed border-stone-300 px-5 py-12"
             >
                 <input {...getInputProps({ id: name })} />
                 {children}

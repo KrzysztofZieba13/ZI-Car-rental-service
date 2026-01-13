@@ -9,6 +9,7 @@ import AdminCar, { handleLoadCar } from './features/car/AdminCar.tsx';
 import { AppProvider } from './context/AppContext.tsx';
 import { AxiosInterceptor } from './services/AxiosInterceptor.tsx';
 import ManageCars, { handleLoadCars } from './features/car/ManageCars.tsx';
+import { authMiddleware } from './middlewares/authMiddleware.ts';
 
 const router = createBrowserRouter([
     {
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
             },
             {
                 path: 'admin',
+                middleware: [authMiddleware],
                 children: [
                     { index: true, element: <Navigate to="car" replace /> },
                     {

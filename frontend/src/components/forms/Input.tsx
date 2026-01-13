@@ -38,7 +38,7 @@ const Input = ({
                     onChange={handleChange}
                     value={value}
                     className={cn(
-                        'w-full rounded-sm border border-neutral-300 p-1.5 focus:border-yellow-700 focus:outline-sky-700',
+                        'w-full rounded-sm border border-stone-300 p-1.5 focus:border-yellow-700 focus:outline-sky-700',
                         className,
                     )}
                     placeholder={placeholder}

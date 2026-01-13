@@ -79,16 +79,22 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     await createSendToken(newUser, 201, res);
 };
 
-export const signin = async (req: Request, res: Response): Promise<void> => {
+export const signin = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const user: IUser = await User.findOne({ email }).select('+password');
 
     if (!user.password){
-        throw new Error('Password is missing');
+        return res.status(401).json({
+            status: 'error',
+            message: 'Password is missing'
+        })
     }
 
     if (!user || !(await user.compareValues(password, user.password))) {
-        throw new Error(`Incorrect password or email address`);
+        return res.status(401).json({
+            status: 'error',
+            message: 'Incorrect password or email address'
+        })
     }
 
     await createSendToken(user, 200, res);
@@ -100,13 +106,16 @@ export const refreshToken = async (req: Request, res: Response) => {
     ] as string;
     const clearTokens = () => {
         res.clearCookie(JWT_REFRESH_COOKIE_NAME, {
-            path: '/api/auth/refresh',
+            path: '/api/auth',
         });
-        res.clearCookie(JWT_COOKIE_NAME);
+        res.clearCookie(JWT_COOKIE_NAME, {path: '/'});
     };
 
     if (!process.env.JWT_SECRET){
-        throw new Error('JWT_SECRET is missing');
+        return res.status(401).json({
+            status: 'fail',
+            message: 'JWT_SECRET is missing',
+        });
     }
 
     try {
@@ -124,7 +133,7 @@ export const refreshToken = async (req: Request, res: Response) => {
             clearTokens();
             return res.status(401).json({
                 status: 'fail',
-                message: 'Użytkownik nie istnieje lub token unieważniony.',
+                message: 'User doesn\'t exists anymore or never existed.',
             });
         }
 
@@ -140,7 +149,7 @@ export const refreshToken = async (req: Request, res: Response) => {
             clearTokens();
             return res.status(401).json({
                 status: 'fail',
-                message: 'Nieprawidłowy Refresh token.',
+                message: 'Incorrect refresh token.',
             });
         }
 
@@ -172,7 +181,7 @@ export const protect = async (
     const jwtSecret: string | undefined = process.env.JWT_SECRET;
 
     if (!accessToken) {
-        res.status(401).json({
+        return res.status(401).json({
             status: 'fail',
             message: 'No jwt token provided',
         });
@@ -180,7 +189,10 @@ export const protect = async (
 
     try {
         if (!jwtSecret) {
-            throw new Error('JWT_SECRET is missing');
+            return res.status(401).json({
+                status: 'fail',
+                message: 'JWT token no exists',
+            });
         }
 
         const decoded: any = await jwtVerifyPromisified(accessToken, jwtSecret);
@@ -198,7 +210,44 @@ export const protect = async (
     } catch (err) {
         return res.status(401).json({
             status: 'fail',
-            message: 'Token dostępu jest nieprawidłowy lub wygasł.',
+            message: 'Access token is invalid or expired.',
         });
     }
+};
+
+export const getMe = (req: AuthenticationRequest, res: Response) => {
+    const user = req.user;
+
+    if (!user) {
+        return res.status(401).json({
+            status: 'fail',
+            message: 'User session not found'
+        });
+    }
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            user: {
+                id: user._id,
+                role: user.role,
+            },
+        },
+    });
+}
+
+export const logout = async (req: Request, res: Response) => {
+    const refreshToken = req.cookies[JWT_REFRESH_COOKIE_NAME];
+
+    if (refreshToken) {
+        await User.findOneAndUpdate(
+            { refreshToken },
+            { $unset: { refreshToken: 1 } }
+        );
+    }
+
+    res.clearCookie(JWT_REFRESH_COOKIE_NAME, { path: '/api/auth' });
+    res.clearCookie(JWT_COOKIE_NAME, { path: '/' });
+
+    res.status(204).json({ status: 'success' });
 };

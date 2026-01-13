@@ -7,6 +7,7 @@ import Form from '../../components/forms/Form.tsx';
 import Input from '../../components/forms/Input.tsx';
 import Button from '../../components/buttons/Button.tsx';
 import LinkUnderline from '../../components/nav/LinkUnderline.tsx';
+import { useNavigate } from 'react-router';
 
 export interface SignupFormValues {
     name: string;
@@ -16,6 +17,7 @@ export interface SignupFormValues {
 }
 
 const Signup: React.FC = () => {
+    const navigate = useNavigate();
     const formik = useFormik<SignupFormValues>({
         initialValues: {
             name: '',
@@ -24,8 +26,12 @@ const Signup: React.FC = () => {
             passwordConfirm: '',
         },
         onSubmit: async (data: SignupFormValues) => {
-            data = await signup(data);
-            console.log(`Signup successfully sent: ${data}`);
+            try {
+                await signup(data);
+                navigate('/');
+            } catch (err) {
+                console.log(err);
+            }
         },
     });
 

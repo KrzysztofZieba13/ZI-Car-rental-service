@@ -6,6 +6,9 @@ import Form from '../../components/forms/Form.tsx';
 import Input from '../../components/forms/Input.tsx';
 import Button from '../../components/buttons/Button.tsx';
 import LinkUnderline from '../../components/nav/LinkUnderline.tsx';
+import { useNavigate } from 'react-router';
+import Notification from '../../features/notifications/Notification.tsx';
+import { useApp } from '../../context/AppContext.tsx';
 
 export interface LoginFormValues {
     email: string;
@@ -13,18 +16,36 @@ export interface LoginFormValues {
 }
 
 const Login = () => {
+    const { notification } = useApp();
+    const navigate = useNavigate();
+
     const formik = useFormik<LoginFormValues>({
         initialValues: {
             email: '',
             password: '',
         },
         onSubmit: async (data: LoginFormValues) => {
-            await login(data);
+            try {
+                const res = await login(data);
+                const user = res?.data?.user;
+                if (user.role === 'admin') {
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }
+            } catch (error) {
+                console.error(error);
+            }
         },
     });
 
     return (
         <Auth>
+            {notification && (
+                <Notification status={notification.status}>
+                    {notification.message}
+                </Notification>
+            )}
             <PrimaryHeader>Sign in to your account</PrimaryHeader>
             <Form handleSubmit={formik.handleSubmit}>
                 <Input
