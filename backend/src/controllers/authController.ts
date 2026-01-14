@@ -251,3 +251,23 @@ export const logout = async (req: Request, res: Response) => {
 
     res.status(204).json({ status: 'success' });
 };
+
+export const restrictTo =
+    (...roles: string[]) =>
+        (req: AuthenticationRequest, res: Response, next: NextFunction) => {
+            if (!req.user) {
+                return res.status(401).json({
+                    status: 'fail',
+                    message: 'User not authenticated',
+                });
+            }
+
+            if (!roles.includes(req.user.role)) {
+                return res.status(403).json({
+                    status: 'fail',
+                    message: 'You do not have permission to perform this action',
+                });
+            }
+
+            next();
+        };

@@ -8,14 +8,8 @@ import {
     useCallback,
     useMemo,
 } from 'react';
-export interface UserType {
-    id: string;
-    role: 'admin' | 'user';
-}
 interface AppContextType {
     notification: NotificationType | null;
-    user: UserType | null;
-    setUser: (user: UserType | null) => void;
     handleNotification: (message: NotificationType | null) => void;
 }
 
@@ -30,7 +24,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const [notification, setNotification] = useState<NotificationType | null>(
         null,
     );
-    const [user, setUser] = useState<UserType | null>(null);
 
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     useEffect(() => {
@@ -57,12 +50,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const value = useMemo(
         () => ({
-            user,
-            setUser,
             notification,
             handleNotification,
         }),
-        [user, notification, handleNotification],
+        [notification, handleNotification],
     );
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

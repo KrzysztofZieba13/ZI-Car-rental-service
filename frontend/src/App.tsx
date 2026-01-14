@@ -4,6 +4,13 @@ import { cn } from './utils/util.ts';
 import Sidebar from './components/sidebar/Sidebar.tsx';
 import Notification from './features/notifications/Notification.tsx';
 import { useApp } from './context/AppContext.tsx';
+import type { LoaderFunctionArgs } from 'react-router';
+import { userContext } from './middlewares/authMiddleware.ts';
+
+export const rootLoader = ({ context }: LoaderFunctionArgs) => {
+    const user = context.get(userContext);
+    return { user };
+};
 
 const App: React.FC = () => {
     const { notification } = useApp();

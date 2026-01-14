@@ -29,7 +29,7 @@ const Login = () => {
                 const res = await login(data);
                 const user = res?.data?.user;
                 if (user.role === 'admin') {
-                    navigate('/admin');
+                    navigate('/admin/cars');
                 } else {
                     navigate('/');
                 }

@@ -3,36 +3,28 @@ import ThirdHeader from '../headers/ThirdHeader.tsx';
 import Button from '../buttons/Button.tsx';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Card from './Card.tsx';
-import type { LoadedCarType } from '../../types/carTypes.ts';
-import { Link, useRevalidator } from 'react-router';
-import { deleteCar } from '../../services/carService.ts';
-import { useApp } from '../../context/AppContext.tsx';
+import type { LoadedCarType, Rent } from '../../types/carTypes.ts';
+import { Link, useLoaderData } from 'react-router';
+import { formatDatePL } from '../../utils/util.ts';
 
-const CarCard = ({ car }: { car: LoadedCarType }) => {
-    const { revalidate } = useRevalidator();
-    const brand: string = car.brand.toUpperCase();
-    const model: string = car.model;
-    const { handleNotification } = useApp();
+interface CarCardProps {
+    car: LoadedCarType;
+    rental: Rent;
+    onClickRent: () => void;
+    onClickDelete: () => void;
+}
 
+const CarCard = ({ car, rental, onClickRent, onClickDelete }: CarCardProps) => {
+    const brand: string = car?.brand?.toUpperCase();
+    const model: string = car?.model;
+    const { user } = useLoaderData();
     const carPrimaryImage: string = car.primaryImage;
     const primaryImgUrl: string = `${import.meta.env.VITE_SERVER_URL}${carPrimaryImage.split('/').at(1)}`;
     const isWebpPrimary = carPrimaryImage.endsWith('.webp');
     const primaryImageWebpSrc: string = isWebpPrimary ? primaryImgUrl : '';
     const primaryImageJpgSrc: string = !isWebpPrimary ? primaryImgUrl : '';
 
-    const handleDelete = async () => {
-        try {
-            const id: string = car._id;
-            await deleteCar(id);
-            await revalidate();
-            handleNotification({
-                message: `Successfully deleted car`,
-                status: 'success',
-            });
-        } catch (err) {
-            console.error(err);
-        }
-    };
+    const isAdmin = user.role === 'admin';
 
     return (
         <Card>
@@ -44,7 +36,19 @@ const CarCard = ({ car }: { car: LoadedCarType }) => {
             />
 
             <div className="mt-2 flex flex-col px-4 py-2">
-                <ThirdHeader>{`${brand} ${model.toUpperCase()}`}</ThirdHeader>
+                <ThirdHeader>
+                    {`${brand} ${model.toUpperCase()}`}{' '}
+                    {rental ? (
+                        <span className="text-sm text-stone-400">
+                            (
+                            {`${formatDatePL(rental.startDate)} - 
+                            ${formatDatePL(rental.endDate)}`}
+                            )
+                        </span>
+                    ) : (
+                        ''
+                    )}
+                </ThirdHeader>
                 <ul className="mt-1 flex flex-col gap-2">
                     <li>
                         Brand: <span>{brand}</span>
@@ -69,28 +73,41 @@ const CarCard = ({ car }: { car: LoadedCarType }) => {
                     </li>
                 </ul>
                 <div className="mt-8 flex justify-end gap-3">
-                    <Button
-                        type="button"
-                        variant="transparent"
-                        className="flex items-center gap-0.5 p-0 text-stone-700 hover:text-red-800"
-                    >
-                        <Link
-                            to={`/admin/cars/${car._id}`}
-                            className="flex items-center gap-0.5"
+                    {isAdmin && (
+                        <>
+                            <Button
+                                type="button"
+                                variant="transparent"
+                                className="flex items-center gap-0.5 p-0 text-stone-700 hover:text-red-800"
+                            >
+                                <Link
+                                    to={`/admin/cars/${car._id}`}
+                                    className="flex items-center gap-0.5"
+                                >
+                                    <PencilIcon className="size-3.5" />
+                                    Edit
+                                </Link>
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="transparent"
+                                className="flex items-center gap-0.5 p-0 text-stone-700 hover:text-red-800"
+                                onClick={onClickDelete}
+                            >
+                                <TrashIcon className="size-3.5" />
+                                Delete
+                            </Button>
+                        </>
+                    )}
+                    {!isAdmin && !rental && (
+                        <Button
+                            type="button"
+                            variant="border"
+                            onClick={onClickRent}
                         >
-                            <PencilIcon className="size-3.5" />
-                            Edit
-                        </Link>
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="transparent"
-                        className="flex items-center gap-0.5 p-0 text-stone-700 hover:text-red-800"
-                        onClick={handleDelete}
-                    >
-                        <TrashIcon className="size-3.5" />
-                        Delete
-                    </Button>
+                            Rent
+                        </Button>
+                    )}
                 </div>
             </div>
         </Card>

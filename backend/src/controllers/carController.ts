@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Car from "../models/carModel";
 import {unlinkImages} from "../utils/utils";
 import {PipelineStage} from "mongoose";
+import Rent from "../models/rentModel";
 
 interface MulterRequest extends Request {
     files: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] };
@@ -195,24 +196,30 @@ export const updateOne = async (req: Request, res: Response) => {
 
 export const deleteOne = async (req: Request, res: Response) => {
     try {
-       const deletedCar = await Car.findByIdAndDelete(req.params.id)
+        const carId = req.params.id;
 
-        if (!deletedCar) return res.status(404).json({
-            status: 'error',
-            message: 'No car found'
-        })
+        const deletedCar = await Car.findByIdAndDelete(carId);
+
+        if (!deletedCar) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'No car found'
+            });
+        }
+
+        await Rent.deleteMany({ car: carId });
 
         if (deletedCar.images && deletedCar.images.length > 0) {
             await unlinkImages(deletedCar.images);
         }
 
         return res.status(200).json({
-            status: 'success'
-        })
+            status: 'success',
+        });
     } catch (err) {
         return res.status(500).json({
             status: 'error',
             message: 'Server Error'
-        })
+        });
     }
-}
+};

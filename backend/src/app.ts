@@ -4,6 +4,7 @@ import cors from 'cors';
 import userRoutes from './routes/userRoutes';
 import defaultRoutes from './routes/authRoutes';
 import carRoutes from "./routes/carRoutes";
+import rentRoutes from "./routes/rentRoutes";
 
 const app: Express = express();
 const corsOptions = {
@@ -22,6 +23,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/api/auth', defaultRoutes);
+app.use('/api/rent', rentRoutes);
 app.use('/api/cars', carRoutes);
 app.use('/api/users', userRoutes);
 

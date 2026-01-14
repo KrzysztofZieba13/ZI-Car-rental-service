@@ -3,7 +3,7 @@ import React from 'react';
 
 interface ButtonProps {
     type: 'submit' | 'reset' | 'button';
-    variant?: 'primary' | 'secondary' | 'transparent';
+    variant?: 'primary' | 'secondary' | 'transparent' | 'border';
     className?: string;
     onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
     children?: React.ReactNode;
@@ -24,6 +24,8 @@ const Button = ({
                 variant === 'primary' && 'bg-red-800 hover:bg-red-900',
                 variant === 'secondary' && 'bg-sky-800 hover:bg-sky-900',
                 variant === 'transparent' && 'bg-transparent',
+                variant === 'border' &&
+                    'rounded border-2 border-stone-950 bg-transparent px-4 py-1 text-stone-950 hover:border-red-800 hover:text-red-800',
                 className,
             )}
             onClick={onClick}
