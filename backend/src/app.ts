@@ -8,7 +8,7 @@ import rentRoutes from "./routes/rentRoutes.js";
 
 const app: Express = express();
 const corsOptions = {
-    origin: 'https://csr-frontend-zq6v.onrender.com/',
+    origin: 'https://csr-frontend-zq6v.onrender.com',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
