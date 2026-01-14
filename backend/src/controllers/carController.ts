@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import Car from "../models/carModel";
-import {unlinkImages} from "../utils/utils";
+import Car from "../models/carModel.js";
+import {unlinkImages} from "../utils/utils.js";
 import {PipelineStage} from "mongoose";
-import Rent from "../models/rentModel";
+import Rent from "../models/rentModel.js";
 
 interface MulterRequest extends Request {
     files: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] };
@@ -179,7 +179,7 @@ export const updateOne = async (req: Request, res: Response) => {
             return res.status(404).json({})
         }
 
-        const imagesToUnlink = car.images.filter(img => !totalImages.includes(img));
+        const imagesToUnlink = car.images.filter((img: any) => !totalImages.includes(img));
         await unlinkImages(imagesToUnlink);
 
         return res.status(200).json({

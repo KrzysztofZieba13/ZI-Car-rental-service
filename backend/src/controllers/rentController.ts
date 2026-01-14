@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import Rent from "../models/rentModel";
-import { AuthenticationRequest } from './controllerTypes';
+import Rent from "../models/rentModel.js";
+import { AuthenticationRequest } from './controllerTypes.js';
 
 export const create = async (req: AuthenticationRequest, res: Response) => {
     try {

@@ -1,7 +1,7 @@
 import express, { Router } from 'express';
-import {upload} from "../middleware/multer";
-import {create, deleteOne, getAll, getOne, updateOne} from "../controllers/carController";
-import {protect, restrictTo} from "../controllers/authController";
+import {upload} from "../middleware/multer.js";
+import {create, deleteOne, getAll, getOne, updateOne} from "../controllers/carController.js";
+import {protect, restrictTo} from "../controllers/authController.js";
 
 const router: Router = express.Router();
 

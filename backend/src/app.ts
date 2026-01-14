@@ -1,10 +1,10 @@
 import express, { Express, Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import userRoutes from './routes/userRoutes';
-import defaultRoutes from './routes/authRoutes';
-import carRoutes from "./routes/carRoutes";
-import rentRoutes from "./routes/rentRoutes";
+import userRoutes from './routes/userRoutes.js';
+import defaultRoutes from './routes/authRoutes.js';
+import carRoutes from "./routes/carRoutes.js";
+import rentRoutes from "./routes/rentRoutes.js";
 
 const app: Express = express();
 const corsOptions = {

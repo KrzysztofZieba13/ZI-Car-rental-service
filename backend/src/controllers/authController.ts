@@ -2,9 +2,9 @@ import { Request, Response, CookieOptions, NextFunction } from 'express';
 import { Types } from 'mongoose';
 import { StringValue } from 'ms';
 import jwt from 'jsonwebtoken';
-import User, { IUser } from '../models/userModel';
-import { JWT_COOKIE_NAME, JWT_REFRESH_COOKIE_NAME } from '../common/constants';
-import { AuthenticationRequest } from './controllerTypes';
+import User, { IUser } from '../models/userModel.js';
+import { JWT_COOKIE_NAME, JWT_REFRESH_COOKIE_NAME } from '../common/constants.js';
+import { AuthenticationRequest } from './controllerTypes.js';
 
 const ENV: string = process.env.NODE_ENV || 'development';
 

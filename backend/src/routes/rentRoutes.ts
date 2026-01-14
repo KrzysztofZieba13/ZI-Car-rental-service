@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
-import {create, getAll} from '../controllers/rentController';
-import {protect} from "../controllers/authController";
+import {create, getAll} from '../controllers/rentController.js';
+import {protect} from "../controllers/authController.js";
 
 
 const router: Router = express.Router();
