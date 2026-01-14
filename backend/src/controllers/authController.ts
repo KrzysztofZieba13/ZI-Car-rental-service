@@ -31,6 +31,7 @@ const getTokenCookies = (path: string = '/') => {
         ),
         secure: ENV === 'production',
         path: path || '/',
+        sameSite: 'none'
     };
 
     return cookieTokenOptions;
